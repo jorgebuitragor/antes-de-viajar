@@ -13,26 +13,28 @@ body{margin:0}
 :root{
   --bg:#E9EEF0; --card:#FFFFFF; --ink:#13262D; --muted:#5B6B71; --line:#D3DCDF;
   --accent:#E3A21A; --accent-ink:#2A1C00; --done:#2F7D5B;
-  --mafer:#9A3F72; --jorge:#1D6C8C; --on-person:#FFFFFF;
+  --mafer:#9A3F72; --jorge:#1D6C8C; --ambos:#5E4BB3; --on-person:#FFFFFF;
   --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
   --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0F1A1E; --card:#17252A; --ink:#E6EEF0; --muted:#94A6AC; --line:#2A3B41;
   --accent:#F0B433; --accent-ink:#231700; --done:#5BBF8E;
-  --mafer:#E58BC0; --jorge:#6CC0E3; --on-person:#0F1A1E; color-scheme:dark}}
+  --mafer:#E58BC0; --jorge:#6CC0E3; --ambos:#B3A6F2; --on-person:#0F1A1E; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F1A1E; --card:#17252A; --ink:#E6EEF0; --muted:#94A6AC; --line:#2A3B41;
   --accent:#F0B433; --accent-ink:#231700; --done:#5BBF8E;
-  --mafer:#E58BC0; --jorge:#6CC0E3; --on-person:#0F1A1E; color-scheme:dark}
+  --mafer:#E58BC0; --jorge:#6CC0E3; --ambos:#B3A6F2; --on-person:#0F1A1E; color-scheme:dark}
 *{box-sizing:border-box}
 .cols{display:flex;justify-content:space-between;gap:12px;padding-inline:14px 52px;margin-bottom:-14px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
 .who{flex:none;display:flex;gap:4px}
 .who button{font:inherit;font-size:13px;font-weight:700;padding:5px 9px;border-radius:99px;cursor:pointer;background:transparent;border:1.5px solid var(--line);color:var(--muted)}
 .who button[data-p="Mafer"]:hover{border-color:var(--mafer);color:var(--mafer)}
 .who button[data-p="Jorge"]:hover{border-color:var(--jorge);color:var(--jorge)}
+.who button[data-p="Ambos"]:hover{border-color:var(--ambos);color:var(--ambos)}
 .who button[aria-pressed="true"][data-p="Mafer"]{background:var(--mafer);border-color:var(--mafer);color:var(--on-person)}
 .who button[aria-pressed="true"][data-p="Jorge"]{background:var(--jorge);border-color:var(--jorge);color:var(--on-person)}
+.who button[aria-pressed="true"][data-p="Ambos"]{background:var(--ambos);border-color:var(--ambos);color:var(--on-person)}
 .who button:focus-visible,.add select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .split{font-size:14px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 14px}
 .split b{font-weight:700}
@@ -190,14 +192,14 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
   <div class="filters" id="filters" role="search">
     <input id="q" type="search" placeholder="Buscar tareas" autocomplete="off" aria-label="Buscar tareas">
     <select id="fState" aria-label="Filtrar por estado"><option value="">Todas</option><option value="open">Pendientes</option><option value="done">Listas</option></select>
-    <select id="fWho" aria-label="Filtrar por responsable"><option value="">Todos</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="none">Sin asignar</option></select>
+    <select id="fWho" aria-label="Filtrar por responsable"><option value="">Todos</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="Ambos">Ambos</option><option value="none">Sin asignar</option></select>
     <button class="ghost" type="button" id="clearF" hidden>Limpiar</button>
   </div>
   <div class="found" id="found" aria-live="polite" hidden></div>
   <ul id="list"></ul>
   <form class="add" id="addForm">
     <input id="newItem" type="text" placeholder="Agregar algo que no se nos puede olvidar" autocomplete="off" aria-label="Nueva tarea">
-    <select id="newWho" aria-label="Responsable de la nueva tarea"><option value="">Sin asignar</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option></select>
+    <select id="newWho" aria-label="Responsable de la nueva tarea"><option value="">Sin asignar</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="Ambos">Ambos</option></select>
     <button type="submit">Agregar</button>
   </form>
   <div class="foot">
@@ -220,7 +222,7 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
 <script>
 (function(){
   var items = [], lastJson = '', busy = 0, editingId = null;
-  var PEOPLE = ['Mafer','Jorge'];
+  var PEOPLE = ['Mafer','Jorge','Ambos'];
   var list = document.getElementById('list');
   var statusEl = document.getElementById('status');
   var confirmDel = document.getElementById('confirmDel');
@@ -274,6 +276,7 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
     document.getElementById('bar').style.width = (n ? Math.round(k/n*100) : 0)+'%';
     var parts = PEOPLE.map(function(p){
       var mine = items.filter(function(i){ return i.r===p; });
+      if (p==='Ambos' && !mine.length) return '';
       return '<span><b>'+p+'</b> '+mine.filter(function(i){return i.d;}).length+'/'+mine.length+'</span>';
     });
     var free = items.filter(function(i){ return !i.r; }).length;

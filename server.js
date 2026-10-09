@@ -8,7 +8,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'items.json');
 const PUBLIC_DIR = path.join(__dirname, 'public');
-const PEOPLE = ['', 'Mafer', 'Jorge'];
+const PEOPLE = ['', 'Mafer', 'Jorge', 'Ambos'];
 
 const SEED = [
   'Desconectar todo en la casa',
