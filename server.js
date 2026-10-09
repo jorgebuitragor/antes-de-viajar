@@ -75,6 +75,11 @@ async function api(req, res, url) {
     if (!it) return reply(res);
     const b = await readBody(req);
     if (typeof b.d === 'boolean') it.d = b.d;
+    if (typeof b.t === 'string') {
+      const t = b.t.trim().slice(0, 200);
+      if (!t) return send(res, 400, { error: 'texto vacío' });
+      it.t = t;
+    }
     if (PEOPLE.includes(b.r)) it.r = b.r;
     save(); return reply(res);
   }
