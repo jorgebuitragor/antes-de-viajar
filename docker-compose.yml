@@ -1,0 +1,10 @@
+services:
+  antes-de-viajar:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # cambia el primer número si el 3000 ya está ocupado
+    volumes:
+      - viaje-data:/data
+volumes:
+  viaje-data:
