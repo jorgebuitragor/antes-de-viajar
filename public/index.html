@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Antes de viajar</title>
+<title>Listas de la casa</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap">
 <style>
 :root{color-scheme:light}
 body{margin:0}
 
-/* Layout: una etiqueta de equipaje como encabezado, debajo la lista en una sola columna estrecha */
+/* Layout: una etiqueta de equipaje como encabezado, pestañas de listas, y debajo la lista en una sola columna estrecha */
 :root{
   --bg:#E9EEF0; --card:#FFFFFF; --ink:#13262D; --muted:#5B6B71; --line:#D3DCDF;
   --accent:#E3A21A; --accent-ink:#2A1C00; --done:#2F7D5B;
@@ -26,7 +26,66 @@ body{margin:0}
   --accent:#F0B433; --accent-ink:#231700; --done:#5BBF8E;
   --mafer:#E58BC0; --jorge:#6CC0E3; --ambos:#B3A6F2; --on-person:#0F1A1E; color-scheme:dark}
 *{box-sizing:border-box}
-.cols{display:flex;justify-content:space-between;gap:12px;padding-inline:14px 52px;margin-bottom:-14px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:flex;flex-direction:column;gap:22px}
+
+/* Etiqueta de encabezado */
+.tag{position:relative;background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:22px 92px 20px 64px;display:flex;flex-direction:column;gap:6px}
+.tag::before{content:"";position:absolute;left:22px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 3px rgba(0,0,0,.18)}
+.tag .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.75}
+.tag h1{font-family:var(--f-display);font-size:clamp(28px,7vw,38px);line-height:1.05;margin:0;font-weight:800;text-wrap:balance;overflow-wrap:anywhere}
+.tagtools{position:absolute;top:10px;right:10px;display:flex;gap:2px}
+.tt{border:0;background:transparent;color:var(--accent-ink);opacity:.7;width:36px;height:36px;border-radius:8px;cursor:pointer;display:grid;place-content:center}
+.tt:hover:not(:disabled){opacity:1;background:rgba(0,0,0,.1)}
+.tt:disabled{opacity:.25;cursor:not-allowed}
+.meter{display:flex;align-items:center;gap:12px;margin-top:8px}
+.bar{flex:1;height:8px;border-radius:99px;background:rgba(0,0,0,.15);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent-ink);border-radius:99px;transition:width .3s ease}
+.count{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;white-space:nowrap}
+.split{font-size:14px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 14px}
+.split b{font-weight:700}
+
+/* Pestañas de listas */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-block:-8px -4px;scrollbar-width:thin}
+.tab{flex:none;font:inherit;font-weight:700;font-size:14px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tab:hover{border-color:var(--muted);color:var(--ink)}
+.tab[aria-current="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tab .n{font-size:12px;font-variant-numeric:tabular-nums;min-width:20px;padding:1px 6px;border-radius:99px;background:var(--line);color:var(--ink);text-align:center}
+.tab[aria-current="true"] .n{background:var(--accent);color:var(--accent-ink)}
+.tab.new{border-style:dashed;background:transparent}
+
+/* Filtros */
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters input,.filters select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.filters input{flex:1 1 100%}
+.filters select{flex:1}
+.filters .ghost{padding:10px 12px}
+.found{color:var(--muted);font-size:14px;margin-top:-14px}
+
+/* Lista */
+ul{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;border:1px solid var(--line);overflow:hidden}
+ul.sorting{overflow:visible;user-select:none;-webkit-user-select:none}
+li{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 14px;border-top:1px solid var(--line);background:var(--card)}
+li:first-child{border-top:0}
+li label{flex:1;min-width:0;display:flex;align-items:center;gap:14px;padding-block:12px;cursor:pointer}
+li input[type=checkbox]{appearance:none;flex:none;width:24px;height:24px;border:2px solid var(--muted);border-radius:7px;display:grid;place-content:center;cursor:pointer;margin:0;background:transparent}
+li input[type=checkbox]::after{content:"";width:12px;height:7px;border-left:3px solid var(--card);border-bottom:3px solid var(--card);transform:translateY(-2px) rotate(-45deg);opacity:0}
+li input[type=checkbox]:checked{background:var(--done);border-color:var(--done)}
+li input[type=checkbox]:checked::after{opacity:1}
+li .txt{overflow-wrap:anywhere}
+li.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+li .editbox{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--accent);border-radius:8px;padding:9px 10px;margin-block:6px}
+li.dragging{position:relative;z-index:5;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.3);outline:2px solid var(--accent);border-top-color:transparent;cursor:grabbing}
+.grip{flex:none;width:28px;height:36px;margin-left:-8px;border:0;background:transparent;color:var(--muted);border-radius:8px;cursor:grab;touch-action:none;display:grid;place-content:center;opacity:.65}
+.grip:hover{opacity:1;background:var(--bg)}
+ul.filtered .grip{display:none}
+.edit,.del{flex:none;border:0;background:transparent;color:var(--muted);width:36px;height:36px;border-radius:8px;line-height:1;cursor:pointer;opacity:.55}
+.edit{font-size:17px}
+.del{font-size:20px}
+.edit:hover,.del:hover{opacity:1;background:var(--bg)}
+.empty{padding:22px 16px;color:var(--muted);text-align:center}
+
+/* Responsable */
 .who{flex:none;display:flex;gap:4px}
 .who button{font:inherit;font-size:13px;font-weight:700;padding:5px 9px;border-radius:99px;cursor:pointer;background:transparent;border:1.5px solid var(--line);color:var(--muted)}
 .who button[data-p="Mafer"]:hover{border-color:var(--mafer);color:var(--mafer)}
@@ -35,171 +94,212 @@ body{margin:0}
 .who button[aria-pressed="true"][data-p="Mafer"]{background:var(--mafer);border-color:var(--mafer);color:var(--on-person)}
 .who button[aria-pressed="true"][data-p="Jorge"]{background:var(--jorge);border-color:var(--jorge);color:var(--on-person)}
 .who button[aria-pressed="true"][data-p="Ambos"]{background:var(--ambos);border-color:var(--ambos);color:var(--on-person)}
-.who button:focus-visible,.add select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.split{font-size:14px;font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:4px 14px}
-.split b{font-weight:700}
-.add select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 10px}
-@media (max-width:420px){.who button{padding:5px 7px;font-size:12px}.add{flex-wrap:wrap}.add input{flex-basis:100%}.add select{flex:1}}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
-.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:28px 48px;display:flex;flex-direction:column;gap:22px}
-.tag{position:relative;background:var(--accent);color:var(--accent-ink);border-radius:14px 14px 14px 14px;padding:22px 22px 20px 64px;display:flex;flex-direction:column;gap:6px}
-.tag::before{content:"";position:absolute;left:22px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 3px rgba(0,0,0,.18)}
-.tag .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.75}
-.tag h1{font-family:var(--f-display);font-size:clamp(28px,7vw,38px);line-height:1.05;margin:0;font-weight:800;text-wrap:balance}
-.meter{display:flex;align-items:center;gap:12px;margin-top:8px}
-.bar{flex:1;height:8px;border-radius:99px;background:rgba(0,0,0,.15);overflow:hidden}
-.bar span{display:block;height:100%;background:var(--accent-ink);border-radius:99px;transition:width .3s ease}
-.count{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;white-space:nowrap}
-ul{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;border:1px solid var(--line);overflow:hidden}
-li{display:flex;align-items:center;gap:12px;padding:4px 8px 4px 14px;border-top:1px solid var(--line)}
-li:first-child{border-top:0}
-li label{flex:1;min-width:0;display:flex;align-items:center;gap:14px;padding-block:12px;cursor:pointer}
-li input{appearance:none;flex:none;width:24px;height:24px;border:2px solid var(--muted);border-radius:7px;display:grid;place-content:center;cursor:pointer;margin:0;background:transparent}
-li input::after{content:"";width:12px;height:7px;border-left:3px solid var(--card);border-bottom:3px solid var(--card);transform:translateY(-2px) rotate(-45deg);opacity:0}
-li input:checked{background:var(--done);border-color:var(--done)}
-li input:checked::after{opacity:1}
-li input:focus-visible,button:focus-visible,.add input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-li .txt{overflow-wrap:anywhere}
-li.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
-.del{flex:none;border:0;background:transparent;color:var(--muted);width:36px;height:36px;border-radius:8px;font-size:20px;line-height:1;cursor:pointer;opacity:.55}
-.del:hover{opacity:1;background:var(--bg)}
+
+/* Agregar y pie */
 .add{display:flex;gap:8px}
 .add input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.add select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 10px}
 .add button,.ghost{font:inherit;font-weight:700;border-radius:10px;padding:12px 16px;cursor:pointer}
 .add button{border:0;background:var(--ink);color:var(--bg)}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:14px}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:400;padding:8px 12px}
 .status{min-height:1.2em}
-.empty{padding:22px 16px;color:var(--muted);text-align:center}
-.filters{display:flex;flex-wrap:wrap;gap:8px}
-.filters input,.filters select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
-.filters input{flex:1 1 100%}
-.filters select{flex:1}
-.filters input:focus-visible,.filters select:focus-visible,.edit:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.filters .ghost{padding:10px 12px}
-.found{color:var(--muted);font-size:14px;margin-top:-14px}
-.edit{flex:none;border:0;background:transparent;color:var(--muted);width:36px;height:36px;border-radius:8px;font-size:17px;line-height:1;cursor:pointer;opacity:.55}
-.edit:hover{opacity:1;background:var(--bg)}
-li .editbox{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--accent);border-radius:8px;padding:9px 10px;margin-block:6px}
-dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:22px;width:min(380px,calc(100vw - 32px));font-family:var(--f-body)}
+:is(button,input,select,.grip):focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+li .editbox:focus-visible{outline-offset:1px}
+
+/* Diálogos */
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:22px;width:min(400px,calc(100vw - 32px));font-family:var(--f-body)}
 dialog::backdrop{background:rgba(10,20,24,.55)}
 dialog h2{font-family:var(--f-display);font-size:22px;line-height:1.1;margin:0 0 8px}
 dialog p{margin:0 0 18px;color:var(--muted);overflow-wrap:anywhere}
 dialog p b{color:var(--ink)}
 dialog .actions{display:flex;justify-content:flex-end;gap:8px}
+dialog .actions.rev{flex-direction:row-reverse;justify-content:flex-start}
 dialog button{font:inherit;font-weight:700;border-radius:10px;padding:10px 16px;cursor:pointer}
 dialog .cancel{background:transparent;border:1px solid var(--line);color:var(--ink)}
 dialog .danger{background:#C0392B;border:1px solid #C0392B;color:#fff}
-dialog button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+dialog .primary{background:var(--ink);border:1px solid var(--ink);color:var(--bg)}
+.field{display:grid;gap:6px;margin:0 0 12px;font-size:14px;color:var(--muted)}
+.field input{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-width:0}
+.ideas{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+dialog .ideas button{font-weight:400;font-size:14px;padding:5px 11px;border-radius:99px;background:transparent;border:1px solid var(--line);color:var(--muted)}
+dialog .ideas button:hover{color:var(--ink);border-color:var(--muted)}
+
+/* Mascotas sentadas sobre la etiqueta */
+.pets{display:flex;justify-content:flex-end;padding-right:10px;margin-bottom:-30px;position:relative;z-index:1;pointer-events:none}
+.pets svg{display:block;width:min(340px,94%);height:auto;overflow:visible}
+.dog-tail{animation:wag 1.1s ease-in-out infinite}
+.cat-tail{animation:sway 3.8s ease-in-out infinite}
+#p-orange .cat-tail{animation-delay:-1.6s;animation-duration:4.4s}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 5.5s infinite}
+@keyframes wag{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(15deg)}}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(6deg)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.08)}}
+@media (prefers-reduced-motion: reduce){.bar span{transition:none}.dog-tail,.cat-tail,.blink{animation:none}}
+
 @media (max-width:480px){
+  .tag{padding-left:56px}
+  .tag::before{left:18px}
   li{flex-wrap:wrap;gap:0 4px}
-  li label,li .editbox{flex:1 1 calc(100% - 80px)}
-  li .who{order:4;flex-basis:100%;padding:0 0 10px 38px}
-  .cols{display:none}
+  li label,li .editbox{flex:1 1 calc(100% - 116px)}
+  li .who{order:4;flex-basis:100%;padding:0 0 10px 62px}
 }
-li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
-.pets{display:flex;justify-content:flex-end;padding-right:20px;margin-bottom:-23px;position:relative;z-index:1}
-.pets svg{display:block;width:min(230px,66%);height:auto;overflow:visible}
-.dog-tail{transform-origin:66px 88px;animation:wag 1.1s ease-in-out infinite}
-@keyframes wag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(16deg)}}
-@media (prefers-reduced-motion: reduce){.bar span{transition:none}.dog-tail{animation:none}}
+@media (max-width:420px){.who button{padding:5px 7px;font-size:12px}.add{flex-wrap:wrap}.add input{flex-basis:100%}.add select{flex:1}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app">
-  <div class="pets">
-    <svg viewBox="28 14 216 86" role="img" aria-label="La perrita pincher blanca con manchas café y las dos gatas, la atigrada y la naranja, sentadas sobre la etiqueta">
-      <g stroke-linecap="round" stroke-linejoin="round">
-        <!-- Perrita pincher -->
-        <g class="dog-tail">
-          <path d="M64 90 q12 -6 9 -21" fill="none" stroke="#C9BBA8" stroke-width="5.6"/>
-          <path d="M64 90 q12 -6 9 -21" fill="none" stroke="#FBF7F1" stroke-width="3.4"/>
-          <circle cx="73" cy="69.5" r="2.4" fill="#7A4A25"/>
-        </g>
-        <path d="M36 100 C34 80 40 62 50 60 C60 62 66 80 64 100 Z" fill="#FBF7F1" stroke="#C9BBA8" stroke-width="1.4"/>
-        <ellipse cx="57" cy="78" rx="4.5" ry="7" fill="#7A4A25"/>
-        <ellipse cx="41.5" cy="91" rx="3.2" ry="4" fill="#7A4A25"/>
-        <path d="M45 82 V97 M55 82 V97" stroke="#C9BBA8" stroke-width="5.4"/>
-        <path d="M45 82 V97 M55 82 V97" stroke="#FBF7F1" stroke-width="3.4"/>
-        <ellipse cx="45" cy="99" rx="3.2" ry="1.8" fill="#FBF7F1" stroke="#C9BBA8" stroke-width="1"/>
-        <ellipse cx="55" cy="99" rx="3.2" ry="1.8" fill="#FBF7F1" stroke="#C9BBA8" stroke-width="1"/>
-        <path d="M42 59 q8 4 16 0" fill="none" stroke="#D64545" stroke-width="2.6"/>
-        <polygon points="41,42 35,17 48,36" fill="#7A4A25"/>
-        <polygon points="59,42 65,17 52,36" fill="#7A4A25"/>
-        <polygon points="41.5,38 38,23 45.5,35" fill="#E7B79A"/>
-        <polygon points="58.5,38 62,23 54.5,35" fill="#E7B79A"/>
-        <ellipse cx="50" cy="46" rx="11" ry="10.5" fill="#FBF7F1" stroke="#C9BBA8" stroke-width="1.4"/>
-        <path d="M39.4 44 C40 37 45 35.6 49 36.4 C48.6 41 47.6 46.5 45 49.5 C42 50 39.6 48 39.4 44 Z" fill="#7A4A25"/>
-        <ellipse cx="50" cy="52.5" rx="6.2" ry="4.6" fill="#FBF7F1"/>
-        <ellipse cx="50" cy="50" rx="2.3" ry="1.7" fill="#2B1E14"/>
-        <circle cx="45" cy="45" r="1.9" fill="#2B1E14"/>
-        <circle cx="55" cy="45" r="1.9" fill="#2B1E14"/>
-        <circle cx="45.6" cy="44.4" r=".6" fill="#FFFFFF"/>
-        <circle cx="55.6" cy="44.4" r=".6" fill="#FFFFFF"/>
+  <div class="pets"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 322 134" role="img" aria-label="La perrita pincher blanca con manchas café y las dos gatas, la atigrada de ojos verdes y la naranja, sentadas en fila">
+<defs>
+  <linearGradient id="shadeX" x1="0" x2="1" y1="0" y2="0">
+    <stop offset="0" stop-color="#000" stop-opacity=".20"/><stop offset=".28" stop-color="#000" stop-opacity="0"/>
+    <stop offset=".72" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".24"/>
+  </linearGradient>
+  <linearGradient id="shadeY" x1="0" x2="0" y1="0" y2="1">
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/>
+  </linearGradient>
+  <radialGradient id="shine" cx=".36" cy=".28" r=".7">
+    <stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="irisG" cx=".5" cy=".35" r=".75">
+    <stop offset="0" stop-color="#D7EB86"/><stop offset=".6" stop-color="#8DB83F"/><stop offset="1" stop-color="#4E7A22"/>
+  </radialGradient>
+  <radialGradient id="eyeD" cx=".35" cy=".3" r=".8">
+    <stop offset="0" stop-color="#6B4A33"/><stop offset=".45" stop-color="#2B1B10"/><stop offset="1" stop-color="#140B05"/>
+  </radialGradient>
+  <radialGradient id="ground" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#000" stop-opacity=".30"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </radialGradient>
+</defs>
 
-        <!-- Gata atigrada -->
-        <path d="M140 98 C160 98 162 82 152 78" fill="none" stroke="#8E8170" stroke-width="6"/>
-        <path d="M150 86 l4 -2 M154 94 l4 -1" stroke="#4E4438" stroke-width="2"/>
-        <path d="M106 100 C104 80 112 64 125 63 C138 64 146 80 144 100 Z" fill="#8E8170"/>
-        <ellipse cx="125" cy="86" rx="8" ry="12" fill="#B9AE9C"/>
-        <path d="M107 80 q5 2 8 0 M106 88 q5 2 8 0 M135 80 q4 2 8 0 M136 88 q4 2 8 0" fill="none" stroke="#4E4438" stroke-width="2"/>
-        <ellipse cx="119" cy="98.5" rx="5" ry="2.6" fill="#B9AE9C"/>
-        <ellipse cx="131" cy="98.5" rx="5" ry="2.6" fill="#B9AE9C"/>
-        <polygon points="112,44 110,28 121,38" fill="#8E8170"/>
-        <polygon points="138,44 140,28 129,38" fill="#8E8170"/>
-        <polygon points="113.5,41 112.5,32 118.5,38" fill="#D9A08F"/>
-        <polygon points="136.5,41 137.5,32 131.5,38" fill="#D9A08F"/>
-        <ellipse cx="125" cy="50" rx="15" ry="13" fill="#8E8170"/>
-        <path d="M125 38 v6 M120 39 l1 5 M130 39 l-1 5 M110 51 h5 M135 51 h5 M111 55 h4 M135 55 h4" stroke="#4E4438" stroke-width="1.8"/>
-        <ellipse cx="125" cy="56" rx="6" ry="4.2" fill="#E9DFCF"/>
-        <ellipse cx="119" cy="49" rx="2.7" ry="3.1" fill="#8DB04A"/>
-        <ellipse cx="131" cy="49" rx="2.7" ry="3.1" fill="#8DB04A"/>
-        <ellipse cx="119" cy="49" rx=".9" ry="2.5" fill="#2B1E14"/>
-        <ellipse cx="131" cy="49" rx=".9" ry="2.5" fill="#2B1E14"/>
-        <path d="M123.3 54 h3.4 l-1.7 2 z" fill="#D98080"/>
-        <path d="M119 56 L106 54.5 M119 57.5 L107 60 M131 56 L144 54.5 M131 57.5 L143 60" stroke="#4E4438" stroke-width=".8" opacity=".6"/>
-
-        <!-- Gata naranja -->
-        <path d="M216 97 C234 92 228 72 238 64" fill="none" stroke="#E38A3A" stroke-width="6"/>
-        <path d="M229 82 l4 1 M231 72 l4 2" stroke="#B9601F" stroke-width="2"/>
-        <path d="M181 100 C179 80 187 64 200 63 C213 64 221 80 219 100 Z" fill="#E38A3A"/>
-        <ellipse cx="200" cy="86" rx="8" ry="12" fill="#F6C68F"/>
-        <path d="M182 80 q5 2 8 0 M181 88 q5 2 8 0 M210 80 q4 2 8 0 M211 88 q4 2 8 0" fill="none" stroke="#B9601F" stroke-width="2"/>
-        <ellipse cx="194" cy="98.5" rx="5" ry="2.6" fill="#F6C68F"/>
-        <ellipse cx="206" cy="98.5" rx="5" ry="2.6" fill="#F6C68F"/>
-        <g transform="rotate(-9 200 52)">
-          <polygon points="187,44 185,28 196,38" fill="#E38A3A"/>
-          <polygon points="213,44 215,28 204,38" fill="#E38A3A"/>
-          <polygon points="188.5,41 187.5,32 193.5,38" fill="#F2A99A"/>
-          <polygon points="211.5,41 212.5,32 206.5,38" fill="#F2A99A"/>
-          <ellipse cx="200" cy="50" rx="15" ry="13" fill="#E38A3A"/>
-          <path d="M200 38 v6 M195 39 l1 5 M205 39 l-1 5 M185 51 h5 M210 51 h5" stroke="#B9601F" stroke-width="1.8"/>
-          <ellipse cx="200" cy="56" rx="6" ry="4.2" fill="#F6C68F"/>
-          <path d="M191.5 49.5 q2.5 2.2 5 0 M203.5 49.5 q2.5 2.2 5 0" fill="none" stroke="#2B1E14" stroke-width="1.5"/>
-          <path d="M198.3 54 h3.4 l-1.7 2 z" fill="#D9706A"/>
-          <path d="M194 56 L181 54.5 M194 57.5 L182 60 M206 56 L219 54.5 M206 57.5 L218 60" stroke="#B9601F" stroke-width=".8" opacity=".7"/>
-        </g>
-      </g>
-    </svg>
-  </div>
+<g id="p-dog" transform="translate(0 0)"><ellipse cx="55" cy="128" rx="44" ry="5" fill="url(#ground)" stroke="none" stroke-width="1" />
+<g class="dog-tail"><path d="M80 114 C96 110 102 94 97 80" fill="none" stroke="#BFAE98" stroke-width="7.4" stroke-linecap="round"/><path d="M80 114 C96 110 102 94 97 80" fill="none" stroke="#FBF7F1" stroke-width="5" stroke-linecap="round"/><path d="M98.4 88 C97.8 84 97.4 82 97 80" fill="none" stroke="#7A4A25" stroke-width="4.6" stroke-linecap="round"/></g>
+<path d="M22 124 C16 106 22 88 36 86 C46 86 50 100 48 124 Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1.1" stroke-linejoin="round" /><path d="M22 124 C16 106 22 88 36 86 C46 86 50 100 48 124 Z" fill="url(#shadeX)"/><path d="M22 124 C16 106 22 88 36 86 C46 86 50 100 48 124 Z" fill="url(#shadeY)"/>
+<path d="M88 124 C94 106 88 88 74 86 C64 86 60 100 62 124 Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1.1" stroke-linejoin="round" /><path d="M88 124 C94 106 88 88 74 86 C64 86 60 100 62 124 Z" fill="url(#shadeX)"/><path d="M88 124 C94 106 88 88 74 86 C64 86 60 100 62 124 Z" fill="url(#shadeY)"/>
+<path d="M72 88 C82 88 90 98 88 112 C84 118 74 116 70 106 C68 98 68 92 72 88Z" fill="#7A4A25" opacity=".95"/>
+<path d="M33 94 C31 78 40 66 55 66 C70 66 79 78 77 94 C79 108 76 120 72 126 L38 126 C34 120 31 108 33 94Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1.1" stroke-linejoin="round" /><path d="M33 94 C31 78 40 66 55 66 C70 66 79 78 77 94 C79 108 76 120 72 126 L38 126 C34 120 31 108 33 94Z" fill="url(#shadeX)"/><path d="M33 94 C31 78 40 66 55 66 C70 66 79 78 77 94 C79 108 76 120 72 126 L38 126 C34 120 31 108 33 94Z" fill="url(#shadeY)"/><path d="M33 94 C31 78 40 66 55 66 C70 66 79 78 77 94 C79 108 76 120 72 126 L38 126 C34 120 31 108 33 94Z" fill="url(#shine)"/>
+<path d="M46 72 C46 90 47 104 49 124 L61 124 C63 104 64 90 64 72 C58 69 52 69 46 72Z" fill="#FFFFFF" opacity=".55"/>
+<path d="M42 92 L51 92 L50.4 123 L42.6 123 Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1" stroke-linejoin="round" /><path d="M42 92 L51 92 L50.4 123 L42.6 123 Z" fill="url(#shadeX)"/><path d="M42 92 L51 92 L50.4 123 L42.6 123 Z" fill="url(#shadeY)"/>
+<ellipse cx="46.5" cy="125.4" rx="6.2" ry="3.6" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1" />
+<path d="M44.2 124 v2 M46.6 123.6 v2.4 M49 124 v2" stroke="#BFAE98" stroke-width=".7" fill="none"/>
+<path d="M59 92 L68 92 L67.4 123 L59.6 123 Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1" stroke-linejoin="round" /><path d="M59 92 L68 92 L67.4 123 L59.6 123 Z" fill="url(#shadeX)"/><path d="M59 92 L68 92 L67.4 123 L59.6 123 Z" fill="url(#shadeY)"/>
+<ellipse cx="63.5" cy="125.4" rx="6.2" ry="3.6" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1" />
+<path d="M61.2 124 v2 M63.6 123.6 v2.4 M66 124 v2" stroke="#BFAE98" stroke-width=".7" fill="none"/>
+<path d="M38 70 Q55 80 72 70" fill="none" stroke="#9B2C2C" stroke-width="6.4" stroke-linecap="round"/>
+<path d="M38 69.6 Q55 79.6 72 69.6" fill="none" stroke="#DA4B4B" stroke-width="4.8" stroke-linecap="round"/>
+<path d="M40 68.8 Q55 77 70 68.8" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.2" stroke-linecap="round"/>
+<ellipse cx="55" cy="79.6" rx="3.4" ry="3.4" fill="#F1C24A" stroke="#B88A1C" stroke-width="0.8" />
+<ellipse cx="54.2" cy="78.6" rx="1.1" ry="1.1" fill="#FFF3B8" stroke="none" stroke-width="1" />
+<path d="M35 42 C31 31 32 21 38 12 C45 17 51 26 53 36 Z" fill="#7A4A25" stroke="#5A3519" stroke-width="1" stroke-linejoin="round" /><path d="M35 42 C31 31 32 21 38 12 C45 17 51 26 53 36 Z" fill="url(#shadeY)"/>
+<path d="M75 42 C79 31 78 21 72 12 C65 17 59 26 57 36 Z" fill="#7A4A25" stroke="#5A3519" stroke-width="1" stroke-linejoin="round" /><path d="M75 42 C79 31 78 21 72 12 C65 17 59 26 57 36 Z" fill="url(#shadeY)"/>
+<path d="M38.4 34 C36.6 27 36.8 22.4 39 18.6 C43 22 46 27 47 32Z" fill="#E9B5A3" opacity=".85"/>
+<path d="M71.6 34 C73.4 27 73.2 22.4 71 18.6 C67 22 64 27 63 32Z" fill="#E9B5A3" opacity=".85"/>
+<path d="M36 46 C36 32 44 27 55 27 C66 27 74 32 74 46 C74 57 66 64 55 64 C44 64 36 57 36 46Z" fill="#FBF7F1" stroke="#BFAE98" stroke-width="1.1" stroke-linejoin="round" /><path d="M36 46 C36 32 44 27 55 27 C66 27 74 32 74 46 C74 57 66 64 55 64 C44 64 36 57 36 46Z" fill="url(#shadeX)"/><path d="M36 46 C36 32 44 27 55 27 C66 27 74 32 74 46 C74 57 66 64 55 64 C44 64 36 57 36 46Z" fill="url(#shine)"/>
+<path d="M37.6 44 C37 35 43 29.6 52 28.6 C53 33 52 40 49 46 C46 50 40 50 37.6 44Z" fill="#7A4A25"/>
+<path d="M37.6 44 C37 35 43 29.6 52 28.6 C53 33 52 40 49 46 C46 50 40 50 37.6 44Z" fill="url(#shadeX)"/>
+<ellipse cx="55" cy="56" rx="10.5" ry="8" fill="#FFFFFF" stroke="#E6DACA" stroke-width="0.8" />
+<path d="M45 53 Q55 49 65 53" fill="none" stroke="#BFAE98" stroke-opacity=".35" stroke-width=".8"/>
+<ellipse cx="46.4" cy="38.6" rx="2.6" ry="1.7" fill="#C9894E" stroke="none" stroke-width="1" transform="rotate(-12 46.4 38.6)"/>
+<ellipse cx="64" cy="38.6" rx="2.6" ry="1.7" fill="#C9894E" stroke="none" stroke-width="1" transform="rotate(12 64 38.6)"/>
+<ellipse cx="46.6" cy="44.4" rx="3.5" ry="3.9" fill="url(#eyeD)" stroke="none" stroke-width="1" />
+<ellipse cx="47.6" cy="43" rx="1.25" ry="1.25" fill="#fff" stroke="none" stroke-width="1" />
+<ellipse cx="45.6" cy="46.2" rx="0.6" ry="0.6" fill="#fff" stroke="none" stroke-width="1" opacity=".7"/>
+<ellipse cx="63.6" cy="44.4" rx="3.5" ry="3.9" fill="url(#eyeD)" stroke="none" stroke-width="1" />
+<ellipse cx="64.6" cy="43" rx="1.25" ry="1.25" fill="#fff" stroke="none" stroke-width="1" />
+<ellipse cx="62.6" cy="46.2" rx="0.6" ry="0.6" fill="#fff" stroke="none" stroke-width="1" opacity=".7"/>
+<path d="M50.6 52.4 Q55 50.2 59.4 52.4 Q58.6 56.4 55 57.4 Q51.4 56.4 50.6 52.4Z" fill="#1E1410"/>
+<ellipse cx="53.6" cy="52.4" rx="1.9" ry="0.9" fill="#fff" stroke="none" stroke-width="1" opacity=".45"/>
+<path d="M55 57.2 V60 M55 60 Q51.5 63 48.4 60.8 M55 60 Q58.5 63 61.6 60.8" fill="none" stroke="#3A2A20" stroke-width="1.1" stroke-linecap="round"/></g>
+<g id="p-tabby" transform="translate(108 0)"><ellipse cx="50" cy="128" rx="40" ry="5" fill="url(#ground)" stroke="none" stroke-width="1" />
+<g class="cat-tail" style="transform-origin:76px 122px"><path d="M76 122 C96 126 106 112 99 100" fill="none" stroke="#5E5242" stroke-width="9.4" stroke-linecap="round"/><path d="M76 122 C96 126 106 112 99 100" fill="none" stroke="#9A8C78" stroke-width="7.2" stroke-linecap="round"/><path d="M76 122 C96 126 106 112 99 100" fill="none" stroke="#40362B" stroke-width="7.2" stroke-dasharray="2.6 6.4" stroke-opacity=".85"/></g>
+<path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1.1" stroke-linejoin="round" /><path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="url(#shadeX)"/><path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="url(#shadeY)"/>
+<path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1.1" stroke-linejoin="round" /><path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="url(#shadeX)"/><path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="url(#shadeY)"/>
+<path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1.1" stroke-linejoin="round" /><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shadeX)"/><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shadeY)"/><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shine)"/>
+<path d="M42 70 C40 90 41 108 43 126 L57 126 C59 108 60 90 58 70 C54 66 46 66 42 70Z" fill="#D9CFBC"/>
+<path d="M75 84 q-7 1.5 -10 7" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M75 92 q-7 1.8 -10 8" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M74 101 q-7 1.8 -10 8" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M74 110 q-7 1.5 -10 7" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M25 84 q7 1.5 10 7" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M25 92 q7 1.8 10 8" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M26 101 q7 1.8 10 8" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M26 110 q7 1.5 10 7" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M39 94 L46 94 L45.6 123 L39.4 123 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" /><path d="M39 94 L46 94 L45.6 123 L39.4 123 Z" fill="url(#shadeY)"/>
+<path d="M38 122 C38 117 47 117 47 122 C47.6 127 37.4 127 38 122Z" fill="#D9CFBC" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" />
+<path d="M41.1 124.6 v2 M43.1 124.6 v2" stroke="#5E5242" stroke-width=".7" fill="none" stroke-opacity=".8"/>
+<path d="M54 94 L61 94 L60.6 123 L54.4 123 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" /><path d="M54 94 L61 94 L60.6 123 L54.4 123 Z" fill="url(#shadeY)"/>
+<path d="M53 122 C53 117 62 117 62 122 C62.6 127 52.4 127 53 122Z" fill="#D9CFBC" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" />
+<path d="M56.1 124.6 v2 M58.1 124.6 v2" stroke="#5E5242" stroke-width=".7" fill="none" stroke-opacity=".8"/>
+<path d="M31 42 C26 30 28 17 32 9 C39 12 46 19 49 29 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" />
+<path d="M69 42 C74 30 72 17 68 9 C61 12 54 19 51 29 Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1" stroke-linejoin="round" />
+<path d="M33.6 35 C31.6 27 32 20 33.6 15.6 C38 18 42 23 44 29Z" fill="#E7A3A0"/>
+<path d="M66.4 35 C68.4 27 68 20 66.4 15.6 C62 18 58 23 56 29Z" fill="#E7A3A0"/>
+<path d="M34 33 C33 27 33.4 22 34.4 19 C37 21 40 24 41.6 28Z" fill="#000" opacity=".12"/>
+<path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="#9A8C78" stroke="#5E5242" stroke-width="1.1" stroke-linejoin="round" /><path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="url(#shadeX)"/><path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="url(#shine)"/>
+<path d="M50 28.6 v7 M44.6 29.6 l1.4 6 M55.4 29.6 l-1.4 6" fill="none" stroke="#40362B" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".9"/>
+<path d="M29 48 h7 M30 53 h6 M71 48 h-7 M70 53 h-6" fill="none" stroke="#40362B" stroke-width="1.8" stroke-linecap="round" stroke-opacity=".85"/>
+<ellipse cx="50" cy="56" rx="9.5" ry="6.6" fill="#D9CFBC" stroke="none" stroke-width="1" />
+<g class="blink"><path d="M35.0 45.4 Q40.6 39.2 46.2 45.4 Q40.6 51.6 35.0 45.4Z" fill="url(#irisG)" stroke="#2A2118" stroke-width="1.1"/><ellipse cx="40.6" cy="45.4" rx="1.35" ry="4" fill="#120C08"/><circle cx="42.5" cy="43.6" r="1.25" fill="#fff"/><circle cx="39.0" cy="47.2" r=".6" fill="#fff" opacity=".7"/></g><path d="M34.2 45.6 Q40.6 38.4 47.0 45.6" fill="none" stroke="#2A2118" stroke-width="1.5" stroke-linecap="round"/><g class="blink"><path d="M53.8 45.4 Q59.4 39.2 65.0 45.4 Q59.4 51.6 53.8 45.4Z" fill="url(#irisG)" stroke="#2A2118" stroke-width="1.1"/><ellipse cx="59.4" cy="45.4" rx="1.35" ry="4" fill="#120C08"/><circle cx="61.3" cy="43.6" r="1.25" fill="#fff"/><circle cx="57.8" cy="47.2" r=".6" fill="#fff" opacity=".7"/></g><path d="M53.0 45.6 Q59.4 38.4 65.8 45.6" fill="none" stroke="#2A2118" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M47.2 51.4 Q50 49.8 52.8 51.4 Q51.8 54.6 50 55.4 Q48.2 54.6 47.2 51.4Z" fill="#D98080"/>
+<ellipse cx="49.2" cy="51.2" rx="1.1" ry="0.55" fill="#fff" stroke="none" stroke-width="1" opacity=".5"/>
+<path d="M50 55.4 V57.6 M50 57.6 Q47 60.4 43.6 58.4 M50 57.6 Q53 60.4 56.4 58.4" fill="none" stroke="#5A3F38" stroke-width="1" stroke-linecap="round"/>
+<g stroke="#F8F1E6" stroke-width=".8" stroke-linecap="round" opacity=".9" fill="none"><path d="M42 56 L24 52.4 M42 58 L25 60.4 M42.4 59.4 L27 66"/><path d="M58 56 L76 52.4 M58 58 L75 60.4 M57.6 59.4 L73 66"/></g></g>
+<g id="p-orange" transform="translate(216 1)"><ellipse cx="50" cy="128" rx="40" ry="5" fill="url(#ground)" stroke="none" stroke-width="1" />
+<g class="cat-tail" style="transform-origin:76px 118px"><path d="M76 118 C95 112 94 90 102 76" fill="none" stroke="#A65A22" stroke-width="9.4" stroke-linecap="round"/><path d="M76 118 C95 112 94 90 102 76" fill="none" stroke="#E8913F" stroke-width="7.2" stroke-linecap="round"/><path d="M76 118 C95 112 94 90 102 76" fill="none" stroke="#B35A1C" stroke-width="7.2" stroke-dasharray="2.6 6.4" stroke-opacity=".85"/></g>
+<path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1.1" stroke-linejoin="round" /><path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="url(#shadeX)"/><path d="M20 124 C14 106 20 88 34 86 C44 86 47 100 46 124 Z" fill="url(#shadeY)"/>
+<path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1.1" stroke-linejoin="round" /><path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="url(#shadeX)"/><path d="M80 124 C86 106 80 88 66 86 C56 86 53 100 54 124 Z" fill="url(#shadeY)"/>
+<path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="#E8913F" stroke="#A65A22" stroke-width="1.1" stroke-linejoin="round" /><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shadeX)"/><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shadeY)"/><path d="M27 96 C25 78 36 64 50 64 C64 64 75 78 73 96 C75 108 72 120 68 126 L32 126 C28 120 25 108 27 96Z" fill="url(#shine)"/>
+<path d="M42 70 C40 90 41 108 43 126 L57 126 C59 108 60 90 58 70 C54 66 46 66 42 70Z" fill="#F8D9A6"/>
+<path d="M75 84 q-7 1.5 -10 7" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M75 92 q-7 1.8 -10 8" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M74 101 q-7 1.8 -10 8" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M74 110 q-7 1.5 -10 7" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M25 84 q7 1.5 10 7" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M25 92 q7 1.8 10 8" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M26 101 q7 1.8 10 8" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M26 110 q7 1.5 10 7" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8"/>
+<path d="M39 94 L46 94 L45.6 123 L39.4 123 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" /><path d="M39 94 L46 94 L45.6 123 L39.4 123 Z" fill="url(#shadeY)"/>
+<path d="M38 122 C38 117 47 117 47 122 C47.6 127 37.4 127 38 122Z" fill="#F8D9A6" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" />
+<path d="M41.1 124.6 v2 M43.1 124.6 v2" stroke="#A65A22" stroke-width=".7" fill="none" stroke-opacity=".8"/>
+<path d="M54 94 L61 94 L60.6 123 L54.4 123 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" /><path d="M54 94 L61 94 L60.6 123 L54.4 123 Z" fill="url(#shadeY)"/>
+<path d="M53 122 C53 117 62 117 62 122 C62.6 127 52.4 127 53 122Z" fill="#F8D9A6" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" />
+<path d="M56.1 124.6 v2 M58.1 124.6 v2" stroke="#A65A22" stroke-width=".7" fill="none" stroke-opacity=".8"/>
+<path d="M31 42 C26 30 28 17 32 9 C39 12 46 19 49 29 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" />
+<path d="M69 42 C74 30 72 17 68 9 C61 12 54 19 51 29 Z" fill="#E8913F" stroke="#A65A22" stroke-width="1" stroke-linejoin="round" />
+<path d="M33.6 35 C31.6 27 32 20 33.6 15.6 C38 18 42 23 44 29Z" fill="#E7A3A0"/>
+<path d="M66.4 35 C68.4 27 68 20 66.4 15.6 C62 18 58 23 56 29Z" fill="#E7A3A0"/>
+<path d="M34 33 C33 27 33.4 22 34.4 19 C37 21 40 24 41.6 28Z" fill="#000" opacity=".12"/>
+<path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="#E8913F" stroke="#A65A22" stroke-width="1.1" stroke-linejoin="round" /><path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="url(#shadeX)"/><path d="M28 47 C28 33 38 27 50 27 C62 27 72 33 72 47 C72 58 63 64 50 64 C37 64 28 58 28 47Z" fill="url(#shine)"/>
+<path d="M50 28.6 v7 M44.6 29.6 l1.4 6 M55.4 29.6 l-1.4 6" fill="none" stroke="#B35A1C" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".9"/>
+<path d="M29 48 h7 M30 53 h6 M71 48 h-7 M70 53 h-6" fill="none" stroke="#B35A1C" stroke-width="1.8" stroke-linecap="round" stroke-opacity=".85"/>
+<ellipse cx="50" cy="56" rx="9.5" ry="6.6" fill="#F8D9A6" stroke="none" stroke-width="1" />
+<path d="M35.6 46.6 Q40.6 40.4 45.6 46.6" fill="none" stroke="#2B1A10" stroke-width="2.2" stroke-linecap="round"/><path d="M36.4 48.4 Q40.6 50.6 44.800000000000004 48.4" fill="none" stroke="#B9601F" stroke-width=".9" stroke-linecap="round" opacity=".5"/><path d="M54.4 46.6 Q59.4 40.4 64.4 46.6" fill="none" stroke="#2B1A10" stroke-width="2.2" stroke-linecap="round"/><path d="M55.199999999999996 48.4 Q59.4 50.6 63.6 48.4" fill="none" stroke="#B9601F" stroke-width=".9" stroke-linecap="round" opacity=".5"/><ellipse cx="34.2" cy="53" rx="3.6" ry="2.2" fill="#F28C7A" stroke="none" stroke-width="1" opacity=".35"/><ellipse cx="65.8" cy="53" rx="3.6" ry="2.2" fill="#F28C7A" stroke="none" stroke-width="1" opacity=".35"/>
+<path d="M47.2 51.4 Q50 49.8 52.8 51.4 Q51.8 54.6 50 55.4 Q48.2 54.6 47.2 51.4Z" fill="#E2807A"/>
+<ellipse cx="49.2" cy="51.2" rx="1.1" ry="0.55" fill="#fff" stroke="none" stroke-width="1" opacity=".5"/>
+<path d="M50 55.4 V57.6 M50 57.6 Q47 60.4 43.6 58.4 M50 57.6 Q53 60.4 56.4 58.4" fill="none" stroke="#5A3F38" stroke-width="1" stroke-linecap="round"/>
+<g stroke="#F8F1E6" stroke-width=".8" stroke-linecap="round" opacity=".9" fill="none"><path d="M42 56 L24 52.4 M42 58 L25 60.4 M42.4 59.4 L27 66"/><path d="M58 56 L76 52.4 M58 58 L75 60.4 M57.6 59.4 L73 66"/></g></g></svg></div>
   <header class="tag">
-    <span class="eyebrow">Checklist de salida</span>
-    <h1>Antes de viajar</h1>
+    <span class="eyebrow">Listas de la casa</span>
+    <h1 id="listName">…</h1>
     <div class="meter"><div class="bar"><span id="bar" style="width:0%"></span></div><span class="count" id="count">…</span></div>
     <div class="split" id="split"></div>
+    <div class="tagtools">
+      <button class="tt" type="button" id="renameList" aria-label="Renombrar lista" title="Renombrar lista"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="tt" type="button" id="deleteList" aria-label="Eliminar lista" title="Eliminar lista"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+    </div>
   </header>
-  <div class="cols" aria-hidden="true"><span>Tarea</span><span>Responsable</span></div>
+  <nav class="tabs" id="tabs" aria-label="Listas"></nav>
   <div class="filters" id="filters" role="search">
-    <input id="q" type="search" placeholder="Buscar tareas" autocomplete="off" aria-label="Buscar tareas">
-    <select id="fState" aria-label="Filtrar por estado"><option value="">Todas</option><option value="open">Pendientes</option><option value="done">Listas</option></select>
+    <input id="q" type="search" placeholder="Buscar en esta lista" autocomplete="off" aria-label="Buscar en esta lista">
+    <select id="fState" aria-label="Filtrar por estado"><option value="">Todos</option><option value="open">Pendientes</option><option value="done">Hechos</option></select>
     <select id="fWho" aria-label="Filtrar por responsable"><option value="">Todos</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="Ambos">Ambos</option><option value="none">Sin asignar</option></select>
     <button class="ghost" type="button" id="clearF" hidden>Limpiar</button>
   </div>
   <div class="found" id="found" aria-live="polite" hidden></div>
   <ul id="list"></ul>
   <form class="add" id="addForm">
-    <input id="newItem" type="text" placeholder="Agregar algo que no se nos puede olvidar" autocomplete="off" aria-label="Nueva tarea">
-    <select id="newWho" aria-label="Responsable de la nueva tarea"><option value="">Sin asignar</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="Ambos">Ambos</option></select>
+    <input id="newItem" type="text" placeholder="Agregar a esta lista" autocomplete="off" aria-label="Nuevo ítem">
+    <select id="newWho" aria-label="Responsable del nuevo ítem"><option value="">Sin asignar</option><option value="Mafer">Mafer</option><option value="Jorge">Jorge</option><option value="Ambos">Ambos</option></select>
     <button type="submit">Agregar</button>
   </form>
   <div class="foot">
@@ -208,27 +308,45 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
   </div>
 </div>
 
-<dialog id="confirmDel" aria-labelledby="cdTitle">
+<dialog id="confirmDlg" aria-labelledby="cdTitle">
   <form method="dialog">
-    <h2 id="cdTitle">¿Eliminar tarea?</h2>
-    <p>Se quitará <b id="cdText"></b> de la lista para todos. No se puede deshacer.</p>
+    <h2 id="cdTitle">¿Eliminar?</h2>
+    <p id="cdMsg"></p>
     <div class="actions">
       <button class="cancel" value="cancel" autofocus>Cancelar</button>
-      <button class="danger" value="ok">Eliminar</button>
+      <button class="danger" value="ok" id="cdOk">Eliminar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="listDlg" aria-labelledby="ldTitle">
+  <form method="dialog">
+    <h2 id="ldTitle">Nueva lista</h2>
+    <label class="field"><span>Nombre de la lista</span><input id="ldName" required maxlength="60" autocomplete="off"></label>
+    <div class="ideas" id="ldIdeas" aria-label="Ideas de listas"></div>
+    <div class="actions rev">
+      <button class="primary" value="ok" id="ldOk">Crear</button>
+      <button class="cancel" value="cancel" formnovalidate>Cancelar</button>
     </div>
   </form>
 </dialog>
 
 <script>
 (function(){
-  var items = [], lastJson = '', busy = 0, editingId = null;
+  var lists = [], lastJson = '', busy = 0, cur = null;
+  var editingId = null, drag = null, kbPending = false, kbTimer = 0, focusGrip = null;
+  var confirmCb = null, listMode = 'new';
   var PEOPLE = ['Mafer','Jorge','Ambos'];
-  var list = document.getElementById('list');
-  var statusEl = document.getElementById('status');
-  var confirmDel = document.getElementById('confirmDel');
+  var IDEAS = ['Súper','Pendientes de la casa','Mascotas','Regalos','Viaje','Pendientes del mes'];
+  var GRIP = '<svg width="12" height="18" viewBox="0 0 12 18" aria-hidden="true"><g fill="currentColor"><circle cx="3" cy="3" r="1.6"/><circle cx="9" cy="3" r="1.6"/><circle cx="3" cy="9" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="3" cy="15" r="1.6"/><circle cx="9" cy="15" r="1.6"/></g></svg>';
+  var $ = function(id){ return document.getElementById(id); };
+  var list = $('list'), statusEl = $('status'), tabs = $('tabs');
+  var q = $('q'), fState = $('fState'), fWho = $('fWho');
+  var confirmDlg = $('confirmDlg'), listDlg = $('listDlg');
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function say(t){ statusEl.textContent = t; }
+  function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
 
   function api(method, path, body){
     return fetch('/api' + path, {
@@ -237,9 +355,15 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
       body: body ? JSON.stringify(body) : undefined
     }).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
   }
+  var lp = function(id){ return '/lists/' + encodeURIComponent(id); };
+  var ip = function(lid, iid){ return lp(lid) + '/items' + (iid ? '/' + encodeURIComponent(iid) : ''); };
 
-  var q = document.getElementById('q'), fState = document.getElementById('fState'), fWho = document.getElementById('fWho');
-  function norm(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  function curList(){ return lists.filter(function(l){ return l.id === cur; })[0] || null; }
+  function itemsOf(){ var l = curList(); return l ? l.items : []; }
+  function find(id){ return itemsOf().filter(function(i){ return i.id === id; })[0]; }
+
+  /* ---------- filtros ---------- */
+  function norm(s){ return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
   function filtersOn(){ return !!(q.value.trim() || fState.value || fWho.value); }
   function matches(it){
     var t = norm(q.value.trim());
@@ -250,119 +374,294 @@ li .editbox:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
     if (fWho.value && it.r!==fWho.value) return false;
     return true;
   }
+  function resetFilters(){ q.value = ''; fState.value = ''; fWho.value = ''; }
 
-  function render(){
-    var shown = items.filter(matches), f = filtersOn();
-    var found = document.getElementById('found');
-    found.hidden = !f; document.getElementById('clearF').hidden = !f;
-    if (f) found.textContent = shown.length+' de '+items.length+(shown.length===1?' tarea':' tareas');
-    if (!items.length){ list.innerHTML = '<li class="empty">La lista está vacía. Agrega la primera tarea abajo.</li>'; }
-    else if (!shown.length){ list.innerHTML = '<li class="empty">Ninguna tarea coincide con la búsqueda o los filtros.</li>'; }
-    else list.innerHTML = shown.map(function(it){
-      var body = (it.id===editingId)
-        ? '<input class="editbox" type="text" maxlength="200" value="'+esc(it.t)+'" aria-label="Editar tarea">'
-        : '<label><input type="checkbox" id="c-'+esc(it.id)+'"'+(it.d?' checked':'')+'><span class="txt">'+esc(it.t)+'</span></label>';
-      return '<li class="'+(it.d?'done':'')+'" data-id="'+esc(it.id)+'">'+body+
-        '<div class="who" role="group" aria-label="Responsable">'+PEOPLE.map(function(p){
-          return '<button type="button" data-p="'+p+'" aria-pressed="'+(it.r===p)+'">'+p+'</button>';
-        }).join('')+'</div>'+
-        '<button class="edit" type="button" aria-label="Editar: '+esc(it.t)+'">✎</button>'+
-        '<button class="del" type="button" aria-label="Quitar: '+esc(it.t)+'">×</button></li>';
-    }).join('');
-    var ed = list.querySelector('.editbox');
-    if (ed && !ed.dataset.ready){ ed.dataset.ready = 1; ed.focus(); ed.setSelectionRange(ed.value.length, ed.value.length); }
-    var n = items.length, k = items.filter(function(i){return i.d;}).length;
-    document.getElementById('count').textContent = (n && k===n) ? '¡Todo listo! Buen viaje' : k+' de '+n+' listo';
-    document.getElementById('bar').style.width = (n ? Math.round(k/n*100) : 0)+'%';
+  /* ---------- render ---------- */
+  function renderTabs(){
+    tabs.innerHTML = lists.map(function(l){
+      var open = l.items.filter(function(i){ return !i.d; }).length;
+      return '<button class="tab" type="button" data-id="'+esc(l.id)+'" aria-current="'+(l.id===cur)+'">'+esc(l.name)+'<span class="n" aria-label="'+open+' pendientes">'+open+'</span></button>';
+    }).join('') + '<button class="tab new" id="newList" type="button">+ Nueva lista</button>';
+  }
+
+  function renderHeader(){
+    var l = curList(), its = itemsOf();
+    $('listName').textContent = l ? l.name : '…';
+    document.title = (l ? l.name + ' · ' : '') + 'Listas de la casa';
+    $('deleteList').disabled = lists.length < 2;
+    var n = its.length, k = its.filter(function(i){ return i.d; }).length;
+    $('count').textContent = !n ? 'Lista vacía' : (k===n ? '¡Todo listo!' : k+' de '+n+' hechos');
+    $('bar').style.width = (n ? Math.round(k/n*100) : 0)+'%';
     var parts = PEOPLE.map(function(p){
-      var mine = items.filter(function(i){ return i.r===p; });
+      var mine = its.filter(function(i){ return i.r===p; });
       if (p==='Ambos' && !mine.length) return '';
       return '<span><b>'+p+'</b> '+mine.filter(function(i){return i.d;}).length+'/'+mine.length+'</span>';
     });
-    var free = items.filter(function(i){ return !i.r; }).length;
+    var free = its.filter(function(i){ return !i.r; }).length;
     if (free) parts.push('<span>Sin asignar '+free+'</span>');
-    document.getElementById('split').innerHTML = parts.join('');
+    $('split').innerHTML = parts.join('');
   }
 
-  function apply(next){
-    var j = JSON.stringify(next);
-    if (j === lastJson) return;
-    lastJson = j; items = next; if (editingId===null) render();
+  function rowHtml(it){
+    var body = (it.id===editingId)
+      ? '<input class="editbox" type="text" maxlength="200" value="'+esc(it.t)+'" aria-label="Editar ítem">'
+      : '<label><input type="checkbox" id="c-'+esc(it.id)+'"'+(it.d?' checked':'')+'><span class="txt">'+esc(it.t)+'</span></label>';
+    return '<li class="'+(it.d?'done':'')+'" data-id="'+esc(it.id)+'">'+
+      '<button class="grip" type="button" aria-label="Mover: '+esc(it.t)+'. Arrastra, o usa las flechas arriba y abajo" aria-keyshortcuts="ArrowUp ArrowDown">'+GRIP+'</button>'+body+
+      '<div class="who" role="group" aria-label="Responsable">'+PEOPLE.map(function(p){
+        return '<button type="button" data-p="'+p+'" aria-pressed="'+(it.r===p)+'">'+p+'</button>';
+      }).join('')+'</div>'+
+      '<button class="edit" type="button" aria-label="Editar: '+esc(it.t)+'">✎</button>'+
+      '<button class="del" type="button" aria-label="Quitar: '+esc(it.t)+'">×</button></li>';
   }
+
+  function renderList(){
+    var its = itemsOf(), shown = its.filter(matches), f = filtersOn();
+    list.classList.toggle('filtered', f);
+    var found = $('found');
+    found.hidden = !f; $('clearF').hidden = !f;
+    if (f) found.textContent = shown.length+' de '+its.length+(its.length===1?' ítem':' ítems');
+    if (!its.length) list.innerHTML = '<li class="empty">Esta lista está vacía. Agrega el primer ítem abajo.</li>';
+    else if (!shown.length) list.innerHTML = '<li class="empty">Nada coincide con la búsqueda o los filtros.</li>';
+    else list.innerHTML = shown.map(rowHtml).join('');
+    var ed = list.querySelector('.editbox');
+    if (ed && !ed.dataset.ready){ ed.dataset.ready = 1; ed.focus(); ed.setSelectionRange(ed.value.length, ed.value.length); }
+    if (focusGrip){
+      var g = list.querySelector('li[data-id="'+focusGrip+'"] .grip'); if (g) g.focus();
+      focusGrip = null;
+    }
+  }
+
+  function renderAll(){ renderTabs(); renderHeader(); renderList(); }
+
+  /* ---------- estado ---------- */
+  function pickInitial(){
+    var h = decodeURIComponent(location.hash.slice(1)), s = store('adv-list');
+    var ids = lists.map(function(l){ return l.id; });
+    if (ids.indexOf(h) >= 0) return h;
+    if (ids.indexOf(s) >= 0) return s;
+    return ids[0] || null;
+  }
+  function setCur(id){
+    cur = id; editingId = null; resetFilters();
+    if (id){ store('adv-list', id); try { history.replaceState(null, '', '#'+encodeURIComponent(id)); } catch (e) {} }
+  }
+  function adopt(d){
+    lastJson = JSON.stringify(d.lists); lists = d.lists;
+    if (!curList()) setCur(pickInitial());
+    if (editingId === null && !drag) renderAll();
+  }
+  function apply(next){ if (JSON.stringify(next) !== lastJson) adopt({lists: next}); }
 
   function load(){
-    if (busy) return;
-    api('GET','/items').then(function(d){ apply(d.items); say(''); })
+    if (busy || kbPending || drag) return;
+    api('GET','/lists').then(function(d){ apply(d.lists); say(''); })
       .catch(function(){ say('Sin conexión con el servidor. Reintentando…'); });
   }
-
   // Cambio local inmediato, luego se confirma con el servidor.
   function change(request){
     busy++;
-    request.then(function(d){ apply(d.items); say(''); })
+    request.then(function(d){ adopt(d); say(''); })
       .catch(function(){ say('No se pudo guardar. Revisa la conexión y vuelve a intentarlo.'); load(); })
       .then(function(){ busy--; });
   }
-  function find(id){ return items.find(function(i){ return i.id===id; }); }
+
+  /* ---------- diálogos ---------- */
+  [confirmDlg, listDlg].forEach(function(d){
+    d.addEventListener('click', function(e){ // clic en el fondo oscuro cierra
+      if (e.target !== d) return;
+      var r = d.getBoundingClientRect();
+      if (e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom) d.close('cancel');
+    });
+  });
+  function askConfirm(title, msgHtml, label, cb){
+    $('cdTitle').textContent = title; $('cdMsg').innerHTML = msgHtml; $('cdOk').textContent = label;
+    confirmCb = cb; confirmDlg.returnValue = ''; confirmDlg.showModal();
+  }
+  confirmDlg.addEventListener('close', function(){
+    var cb = confirmCb; confirmCb = null;
+    if (confirmDlg.returnValue === 'ok' && cb) cb();
+  });
+
+  function openListDlg(mode){
+    listMode = mode;
+    var l = curList();
+    $('ldTitle').textContent = mode==='new' ? 'Nueva lista' : 'Renombrar lista';
+    $('ldOk').textContent = mode==='new' ? 'Crear' : 'Guardar';
+    $('ldName').value = mode==='new' ? '' : (l ? l.name : '');
+    var ideas = $('ldIdeas'); ideas.hidden = mode !== 'new';
+    ideas.innerHTML = IDEAS.map(function(t){ return '<button type="button">'+esc(t)+'</button>'; }).join('');
+    listDlg.returnValue = ''; listDlg.showModal(); $('ldName').focus(); $('ldName').select();
+  }
+  $('ldIdeas').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    $('ldName').value = b.textContent; $('ldName').focus();
+  });
+  listDlg.addEventListener('close', function(){
+    if (listDlg.returnValue !== 'ok') return;
+    var name = $('ldName').value.trim(); if (!name) return;
+    if (listMode === 'new'){
+      busy++;
+      api('POST','/lists',{name:name}).then(function(d){ setCur(d.id); adopt(d); say(''); })
+        .catch(function(){ say('No se pudo crear la lista.'); load(); })
+        .then(function(){ busy--; });
+    } else if (cur){
+      var l = curList(); if (l) l.name = name; renderAll();
+      change(api('PATCH', lp(cur), {name:name}));
+    }
+  });
+
+  /* ---------- pestañas y lista ---------- */
+  tabs.addEventListener('click', function(e){
+    var b = e.target.closest('.tab'); if (!b) return;
+    if (b.id === 'newList') return openListDlg('new');
+    if (b.dataset.id === cur) return;
+    setCur(b.dataset.id); renderAll();
+    var a = tabs.querySelector('.tab[aria-current="true"]');
+    if (a && a.scrollIntoView) a.scrollIntoView({inline:'nearest', block:'nearest'});
+  });
+  window.addEventListener('hashchange', function(){
+    var id = decodeURIComponent(location.hash.slice(1));
+    if (id !== cur && lists.some(function(l){ return l.id === id; })){ setCur(id); renderAll(); }
+  });
+  $('renameList').addEventListener('click', function(){ if (curList()) openListDlg('rename'); });
+  $('deleteList').addEventListener('click', function(){
+    var l = curList(); if (!l || lists.length < 2) return;
+    var n = l.items.length;
+    askConfirm('¿Eliminar lista?',
+      'Se eliminará <b>«'+esc(l.name)+'»</b>'+(n ? ' con '+n+(n===1?' ítem':' ítems') : '')+' para todos. No se puede deshacer.',
+      'Eliminar lista', function(){ change(api('DELETE', lp(l.id))); });
+  });
 
   list.addEventListener('change', function(e){
     var li = e.target.closest('li'); var it = li && find(li.dataset.id); if (!it) return;
-    it.d = e.target.checked; render();
-    change(api('PATCH','/items/'+encodeURIComponent(it.id),{d:it.d}));
+    it.d = e.target.checked; renderAll();
+    change(api('PATCH', ip(cur, it.id), {d:it.d}));
   });
   list.addEventListener('click', function(e){
     var w = e.target.closest('.who button');
     if (w){
       var it = find(w.closest('li').dataset.id); if (!it) return;
-      it.r = (it.r===w.dataset.p) ? '' : w.dataset.p; render();
-      change(api('PATCH','/items/'+encodeURIComponent(it.id),{r:it.r}));
+      it.r = (it.r===w.dataset.p) ? '' : w.dataset.p; renderAll();
+      change(api('PATCH', ip(cur, it.id), {r:it.r}));
       return;
     }
     var ebtn = e.target.closest('.edit');
-    if (ebtn){ editingId = ebtn.closest('li').dataset.id; render(); return; }
+    if (ebtn){ editingId = ebtn.closest('li').dataset.id; renderList(); return; }
     var b = e.target.closest('.del'); if (!b) return;
-    var id = b.closest('li').dataset.id, it = find(id); if (!it) return;
-    document.getElementById('cdText').textContent = '«'+it.t+'»';
-    confirmDel.returnValue = ''; confirmDel.dataset.id = id; confirmDel.showModal();
+    var id = b.closest('li').dataset.id, del = find(id), lid = cur; if (!del) return;
+    askConfirm('¿Eliminar ítem?', 'Se quitará <b>«'+esc(del.t)+'»</b> de la lista para todos. No se puede deshacer.', 'Eliminar', function(){
+      var l = curList(); if (l && l.id === lid) l.items = l.items.filter(function(i){ return i.id!==id; });
+      renderAll();
+      change(api('DELETE', ip(lid, id)));
+    });
   });
-  confirmDel.addEventListener('close', function(){
-    var id = confirmDel.dataset.id; if (confirmDel.returnValue!=='ok' || !id) return;
-    items = items.filter(function(i){ return i.id!==id; }); render();
-    change(api('DELETE','/items/'+encodeURIComponent(id)));
-  });
+
   function finishEdit(save){
     var id = editingId; if (id===null) return;
     var box = list.querySelector('.editbox'), it = find(id);
     var t = box ? box.value.trim() : '';
     editingId = null;
     if (save && it && t && t!==it.t){
-      it.t = t; render();
-      change(api('PATCH','/items/'+encodeURIComponent(id),{t:t}));
-    } else { lastJson = ''; render(); load(); }
+      it.t = t; renderAll();
+      change(api('PATCH', ip(cur, id), {t:t}));
+    } else { lastJson = ''; renderAll(); load(); }
   }
   list.addEventListener('keydown', function(e){
-    if (!e.target.classList.contains('editbox')) return;
-    if (e.key==='Enter'){ e.preventDefault(); finishEdit(true); }
-    else if (e.key==='Escape'){ e.preventDefault(); finishEdit(false); }
+    if (e.target.classList.contains('editbox')){
+      if (e.key==='Enter'){ e.preventDefault(); finishEdit(true); }
+      else if (e.key==='Escape'){ e.preventDefault(); finishEdit(false); }
+      return;
+    }
+    if (e.target.classList.contains('grip') && (e.key==='ArrowUp' || e.key==='ArrowDown')){
+      e.preventDefault(); moveByKey(e.target.closest('li').dataset.id, e.key==='ArrowUp' ? -1 : 1);
+    }
   });
   list.addEventListener('focusout', function(e){
     if (e.target.classList.contains('editbox') && editingId!==null) finishEdit(true);
   });
-  [q, fState, fWho].forEach(function(el){ el.addEventListener('input', render); });
-  document.getElementById('clearF').addEventListener('click', function(){
-    q.value = ''; fState.value = ''; fWho.value = ''; render();
-  });
-  document.getElementById('addForm').addEventListener('submit', function(e){
+  [q, fState, fWho].forEach(function(el){ el.addEventListener('input', renderList); });
+  $('clearF').addEventListener('click', function(){ resetFilters(); renderList(); });
+
+  /* ---------- reordenar ---------- */
+  function commitOrder(lid, ids){
+    var l = lists.filter(function(x){ return x.id===lid; })[0]; if (!l) return;
+    var by = {}; l.items.forEach(function(i){ by[i.id] = i; });
+    l.items = ids.map(function(id){ return by[id]; }).filter(Boolean)
+      .concat(l.items.filter(function(i){ return ids.indexOf(i.id) < 0; }));
+    change(api('PUT', lp(lid) + '/order', {ids: ids}));
+  }
+
+  function moveByKey(id, dir){
+    var l = curList(); if (!l) return;
+    var ids = l.items.map(function(i){ return i.id; }), i = ids.indexOf(id), j = i + dir;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    ids.splice(j, 0, ids.splice(i, 1)[0]);
+    var by = {}; l.items.forEach(function(x){ by[x.id] = x; });
+    l.items = ids.map(function(x){ return by[x]; });
+    focusGrip = id; kbPending = true; renderAll();
+    say('Posición '+(j+1)+' de '+ids.length);
+    var lid = l.id; clearTimeout(kbTimer);
+    kbTimer = setTimeout(function(){ kbPending = false; commitOrder(lid, ids); }, 350);
+  }
+
+  var scrollTimer = 0;
+  function dragMove(y){
+    var li = drag.li;
+    li.style.transform = 'translateY('+(y - drag.startY)+'px)';
+    for (;;){
+      var r = li.getBoundingClientRect(), mid = r.top + r.height/2;
+      var nx = li.nextElementSibling, pv = li.previousElementSibling, nr, pr;
+      if (nx && (nr = nx.getBoundingClientRect(), mid > nr.top + nr.height/2)){
+        li.parentNode.insertBefore(li, nx.nextSibling); drag.startY += nr.height;
+      } else if (pv && (pr = pv.getBoundingClientRect(), mid < pr.top + pr.height/2)){
+        li.parentNode.insertBefore(li, pv); drag.startY -= pr.height;
+      } else break;
+      li.style.transform = 'translateY('+(y - drag.startY)+'px)';
+    }
+  }
+  function dragEnd(save){
+    if (!drag) return;
+    var d = drag; drag = null; clearInterval(scrollTimer);
+    d.li.classList.remove('dragging'); d.li.style.transform = ''; list.classList.remove('sorting');
+    var ids = [].slice.call(list.children).map(function(li){ return li.dataset.id; }).filter(Boolean);
+    var before = itemsOf().map(function(i){ return i.id; });
+    if (save && JSON.stringify(ids) !== JSON.stringify(before)){ commitOrder(cur, ids); renderAll(); }
+    else { lastJson = ''; renderAll(); load(); }
+  }
+  list.addEventListener('pointerdown', function(e){
+    var g = e.target.closest('.grip');
+    if (!g || e.button > 0 || drag || filtersOn()) return;
     e.preventDefault();
-    var inp = document.getElementById('newItem'); var t = inp.value.trim();
-    if (!t) return;
-    var r = document.getElementById('newWho').value;
-    inp.value = '';
-    change(api('POST','/items',{t:t, r:r}));
+    var li = g.closest('li');
+    g.setPointerCapture(e.pointerId);
+    drag = {li: li, startY: e.clientY, pid: e.pointerId, y: e.clientY};
+    li.classList.add('dragging'); list.classList.add('sorting');
+    scrollTimer = setInterval(function(){ // autoscroll cerca de los bordes
+      if (!drag) return;
+      var dy = drag.y < 80 ? -14 : (drag.y > innerHeight - 80 ? 14 : 0);
+      if (dy){ scrollBy(0, dy); drag.startY -= dy; dragMove(drag.y); }
+    }, 30);
   });
-  document.getElementById('reset').addEventListener('click', function(){
-    items.forEach(function(i){ i.d = false; }); render();
-    change(api('POST','/reset'));
+  list.addEventListener('pointermove', function(e){
+    if (!drag || e.pointerId !== drag.pid) return;
+    drag.y = e.clientY; dragMove(e.clientY);
+  });
+  list.addEventListener('pointerup', function(e){ if (drag && e.pointerId === drag.pid) dragEnd(true); });
+  list.addEventListener('pointercancel', function(e){ if (drag && e.pointerId === drag.pid) dragEnd(false); });
+
+  /* ---------- agregar / reset ---------- */
+  $('addForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var inp = $('newItem'), t = inp.value.trim();
+    if (!t || !cur) return;
+    inp.value = '';
+    change(api('POST', ip(cur), {t:t, r:$('newWho').value}));
+  });
+  $('reset').addEventListener('click', function(){
+    if (!cur) return;
+    itemsOf().forEach(function(i){ i.d = false; }); renderAll();
+    change(api('POST', lp(cur) + '/reset'));
   });
 
   load();
